@@ -6,6 +6,7 @@ use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Patient;
+use App\Models\Visit;
 
 class PatientController extends Controller
 {
@@ -19,28 +20,28 @@ class PatientController extends Controller
         $data = array();
 
         $patients =  Patient::all();
-        if (!$patients) {
-            // return response([
-            //     'error' => true,
-            //     'message' => 'No transaction type found'
-            // ], 404);
+
+        foreach ($patients as $patient) {
+            $visit =  Visit::where('opd_number', $patient['opd_number'])->latest()->first();
+
+            $data['patients'] = [
+                'id' => $patient['id'],
+                'unique_id' => $patient['unique_id'],
+                'opd_number' => $patient['opd_number'],
+                'firstname' => $patient['firstname'],
+                'middlename' => $patient['middlename'],
+                'lastname' => $patient['lastname'],
+                'sex' => $patient['sex'],
+                'date_of_birth' => $patient['date_of_birth'],
+                'phone' => $patient['phone'],
+                'phone_emergency' => $patient['phone_emergency'],
+                'address' => $patient['address'],
+                'created_at' => $patient['created_at'],
+                'last_visit' => $visit['created_at'],
+            ];
         }
 
-        // foreach ($visit as $visits) {
-        //     $data[] = [
-        //         'uuid' => $visit['uuid'],
-        //         'name' => $visit['name'],
-        //         'minimum_amount' => $visit['minimum_amount'],
-        //         'maximum_amount' => $visit['maximum_amount'],
-        //         'charge_type' => $visit['charge_type'],
-        //         'charge_amount' => $visit['charge_amount'],
-        //     ];
-        // }
-        // $array['visits'] = [];
-
-        $data['patients'] = $patients;
-
-        return view('patients.index')->with($data);
+        return view('patients.index')->with('patients', $data);
     }
 
     /**
@@ -188,7 +189,9 @@ class PatientController extends Controller
      */
     public function edit($id)
     {
-        //
+        $patient =  Patient::where('unique_id', $id)->first();
+
+        return view('patients.edit')->with('patient', $patient);
     }
 
     /**
@@ -198,9 +201,53 @@ class PatientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $rules = [
+            'unique_id' => 'required|min:3',
+            'opd_number' => 'required|min:3',
+            'firstname' => 'required|min:3',
+            'middlename' => 'nullable|min:3',
+            'lastname' => 'required|min:3',
+            'sex' => 'required|min:4|max:6',
+            'date_of_birth' => 'required|date|min:10|max:10',
+            'phone' => 'required|min:10|max:10',
+            'phone_emergency' => 'required|min:10|max:10',
+            'address' => 'required|min:2',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+
+            return redirect('patient/edit', ['id' => $request->unique_id])->with('error', $errors->first());
+        }
+
+        $patient = Patient::where('unique_id', $request->unique_id)->first();
+        if (!$patient) {
+            return redirect('patients')->with('error', 'Sorry, patient was not found');
+        } else {
+            $patient->unique_id = $request->unique_id;
+            $patient->opd_number = $request->opd_number;
+            $patient->firstname = $request->firstname;
+            $patient->middlename = $request->middlename;
+            $patient->lastname = $request->lastname;
+            $patient->sex = $request->sex;
+            $patient->date_of_birth = $request->date_of_birth;
+            $patient->phone = $request->phone;
+            $patient->phone_emergency = $request->phone_emergency;
+            $patient->address = $request->address;
+            $patient->updated_at = now();
+
+            $result = $patient->save();
+
+            if ($result) {
+                return redirect('patients')->with('success', "Patient has been updated successfully");
+            } else {
+                return redirect('patient/edit', ['id' => $request->unique_id])->with('error', 'Sorry, patient was not updated');
+            }
+        }
     }
 
     /**

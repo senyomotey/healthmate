@@ -43,20 +43,20 @@
                         <tbody>
                             @foreach($patients as $patient)
                             <tr>
-                                <td>{{$patient['id']}}</td>
-                                <td>{{$patient['opd_number']}}</td>
-                                <td>{{$patient['firstname']}}</td>
-                                <td>{{$patient['middlename']}}</td>
-                                <td>{{$patient['lastname']}}</td>
-                                <td>{{$patient['sex']}}</td>
-                                <td>{{date("d-M-Y", strtotime($patient['date_of_birth']))}}</td>
-                                <td>{{$patient['phone']}}</td>
-                                <td>{{$patient['phone_emergency']}}</td>
-                                <td>{{$patient['address']}}</td>
-                                <td>{{date("d-M-Y, h:i:s A", strtotime($patient['created_at']))}}</td>
-                                <td>{{date("d-M-Y, h:i:s A", strtotime($patient['last_visit']))}}</td>
+                                <td>{{ $patient['id'] }}</td>
+                                <td>{{ $patient['opd_number'] }}</td>
+                                <td>{{ $patient['firstname'] }}</td>
+                                <td>{{ $patient['middlename'] }}</td>
+                                <td>{{ $patient['lastname'] }}</td>
+                                <td>{{ $patient['sex'] }}</td>
+                                <td>{{ date("d-M-Y", strtotime($patient['date_of_birth'])) }}</td>
+                                <td>{{ $patient['phone'] }}</td>
+                                <td>{{ $patient['phone_emergency'] }}</td>
+                                <td>{{ $patient['address'] }}</td>
+                                <td>{{ date("d-M-Y, h:i:s A", strtotime($patient['created_at'])) }}</td>
+                                <td>{{ date("d-M-Y, h:i:s A", strtotime($patient['last_visit'])) }}</td>
                                 <td>
-                                    <a href="visits_edit.php?visit_unique_id='.$unique_id.'"><span class="label label-warning"><i class="fa fa-edit"></i></span></a>
+                                    <a href="{{ route('patient/edit', ['id' => $patient['unique_id']]) }}"><span class="label label-warning"><i class="fa fa-edit"></i></span></a>
                                     <!--<a href="#"><span class="label label-danger"><i class="fa fa-trash"></i></span></a>-->
                                 </td>
                             </tr>
