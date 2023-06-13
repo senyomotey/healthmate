@@ -26,6 +26,7 @@ class VisitController extends Controller
 
             $data['visits'] = [
                 'id' => $visit['id'],
+                'unique_id' => $visit['unique_id'],
                 'entry_type' => $visit['entry_type'],
                 'opd_number' => $visit['opd_number'],
                 'firstname' => $patient['firstname'],
@@ -179,7 +180,15 @@ class VisitController extends Controller
      */
     public function edit($id)
     {
-        //
+        $array = array();
+        
+        $visit =  Visit::where('unique_id', $id)->first();
+        $array['visit'] = $visit;
+
+        $patients =  Patient::all();
+        $array['patients'] = $patients;
+
+        return view('visits.edit')->with($array);
     }
 
     /**
@@ -189,9 +198,47 @@ class VisitController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $rules = [
+            'unique_id' => 'required|min:3',
+            'entry_type' => 'required|min:3|max:3',
+            'opd_number' => 'required|min:1',
+            'nhis_status' => 'required|min:2|max:3',
+            'nhis_number' => 'required_if:nhis_status,==,yes',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+
+            return redirect('visit/edit', ['id' => $request->unique_id])->with('error', $errors->first());
+        }
+
+        if ($request->nhis_status == 'no') {
+            $request->nhis_number = null;
+        }
+
+        $visit = Visit::where('unique_id', $request->unique_id)->first();
+        if (!$visit) {
+            return redirect('visits')->with('error', 'Sorry, visit was not found');
+        } else {
+            $visit->unique_id = $request->unique_id;
+            $visit->entry_type = $request->entry_type;
+            $visit->opd_number = $request->opd_number;
+            $visit->nhis_status = $request->nhis_status;
+            $visit->nhis_number = $request->nhis_number;
+            $visit->updated_at = now();
+
+            $result = $visit->save();
+
+            if ($result) {
+                return redirect('visits')->with('success', "Visit has been updated successfully");
+            } else {
+                return redirect('visit/edit', ['id' => $request->unique_id])->with('error', 'Sorry, visit was not updated');
+            }
+        }
     }
 
     /**

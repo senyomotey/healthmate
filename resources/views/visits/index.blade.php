@@ -50,7 +50,7 @@
                                 <td>{{ $visit['nhis_number'] }}</td>
                                 <td>{{ date("d-M-Y, h:i:s A", strtotime($visit['created_at'])) }}</td>
                                 <td>
-                                    <a href="visits_edit.php?visit_unique_id='.$unique_id.'"><span class="label label-warning"><i class="fa fa-edit"></i></span></a>
+                                    <a href="{{ route('visit/edit', ['id' => $visit['unique_id']]) }}"><span class="label label-warning"><i class="fa fa-edit"></i></span></a>
                                     <!--<a href="#"><span class="label label-danger"><i class="fa fa-trash"></i></span></a>-->
                                  </td>
                             </tr>
