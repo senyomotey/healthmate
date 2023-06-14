@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
     <title>Health Mate</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -100,7 +100,7 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href="{{ route('reports') }}"><i class="fa fa-circle"></i> Statement of Outptients</a></li>
+                            <li><a href="{{ route('reports/soo') }}"><i class="fa fa-circle"></i> Statement of Outptients</a></li>
                         </ul>
                     </li>
                 </ul>

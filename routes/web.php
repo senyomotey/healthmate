@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,4 @@ Route::get('patient/edit/{id}', [PatientController::class, 'edit'])->name('patie
 Route::post('patient/store', [PatientController::class, 'store'])->name('patient/store');
 Route::post('patient/update', [PatientController::class, 'update'])->name('patient/update');
 
-Route::get('reports', [HomeController::class, 'index'])->name('reports');
+Route::get('reports/soo', [ReportController::class, 'soo'])->name('reports/soo');
